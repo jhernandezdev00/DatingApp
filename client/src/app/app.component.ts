@@ -4,12 +4,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavComponent } from "./nav/nav.component";
 import { AccountService } from './_services/account.service';
-import { Observable } from 'rxjs';
+import { HomeComponent } from "./home/home.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, NavComponent],
+  imports: [RouterOutlet, CommonModule, NavComponent, HomeComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit{
     this.setCurrentUser();
   }
 
-  setCurrentUser(){
+  setCurrentUser(): void{
     const userString = localStorage.getItem("user");
     if(!userString) return;
     const user = JSON.parse(userString);
