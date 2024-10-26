@@ -1,5 +1,6 @@
 using API.Data;
 using API.DataEntities;
+using API.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
@@ -13,25 +14,26 @@ public class UsersController : BaseApiController{
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetAllAsync(){
+    public async Task<ActionResult<IEnumerable<MemberResponse>>> GetAllAsync(){
         var  users = await _repository.GetAllAsync();
         return Ok(users);
     }
 
     [HttpGet("{id:int}")] //api/v1/users/2
-    public async Task <ActionResult<AppUser>> GetByIDAsync(int id){
+    public async Task <ActionResult<MemberResponse>> GetByIDAsync(int id)
+    {
         var user = await _repository.GetByIdAsync(id);
 
-        if(user == null){
+        if (user == null)
+        {
             return NotFound();
-        } 
+        }
 
         return user;
     }
 
-
     [HttpGet("{username}")] //api/v1/users/2
-    public async Task <ActionResult<AppUser>> GetByUsernameAsync(string username){
+    public async Task <ActionResult<MemberResponse>> GetByUsernameAsync(string username){
         var user = await _repository.GetByUsernameAsync(username);
 
         if(user == null){
