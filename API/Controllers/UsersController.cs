@@ -1,5 +1,5 @@
 using API.Data;
-using API.Entities;
+using API.DataEntities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
@@ -8,7 +8,7 @@ namespace API.Controllers;
 public class UsersController : BaseApiController{
     private readonly IUserRepository _repository;
 
-    public UsersController(UserRepository repository){
+    public UsersController(IUserRepository repository){
         _repository = repository;
     }
 
