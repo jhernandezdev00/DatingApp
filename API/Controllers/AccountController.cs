@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using API.Data;
 using API.DTOs;
-using API.Entities;
+using API.DataEntities;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,21 +18,22 @@ public class AccountController(DataContext context, ITokenService tokenService) 
             return BadRequest("Nombre de Usuario En Uso :(");
         }
 
-        using var hmac = new HMACSHA512();
+        return Ok();
+        //using var hmac = new HMACSHA512();
 
-        var user = new AppUser{
-            UserName = request.UserName,
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password)),
-            PasswordSalt = hmac.Key
-        };
+        // var user = new AppUser{
+        //     UserName = request.UserName,
+        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password)),
+        //     PasswordSalt = hmac.Key
+        // };
 
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
+        // context.Users.Add(user);
+        // await context.SaveChangesAsync();
 
-        return new UserResponse{
-            Username = user.UserName,
-            Token = tokenService.CreateToken(user)
-        };
+        // return new UserResponse{
+        //     Username = user.UserName,
+        //     Token = tokenService.CreateToken(user)
+        // };
     }
 
     [HttpPost("login")]
