@@ -9,11 +9,7 @@ export class BusyService {
   
   busy(): void {
     this.busyRequestCount++;
-    this.spinnerService.show(undefined, {
-      type: "ball-8bits",
-      bdColor: "rgba(0, 0, 0, 0.8)",
-      color: "white"
-    });
+    this.spinnerService.show(undefined, {});
   }
   idle(): void {
     this.busyRequestCount--;
