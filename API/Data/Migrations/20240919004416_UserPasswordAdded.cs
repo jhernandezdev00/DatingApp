@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,6 +8,7 @@ namespace API.Data.Migrations
     /// <inheritdoc />
     public partial class UserPasswordAdded : Migration
     {
+        [ExcludeFromCodeCoverage]
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
