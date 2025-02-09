@@ -1,42 +1,57 @@
 using API.Data;
-using API.Entities;
+using API.DTOs;
+using AutoMapper;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 namespace API.Controllers;
 
 [Authorize]
 public class UsersController : BaseApiController{
-    private readonly DataContext _context;
+    private readonly IUserRepository _repository;
+    private readonly IMapper _mapper;
 
-    public UsersController(DataContext context)
-    {
-        _context = context;
+    public UsersController(IUserRepository repository, IMapper mapper){
+        _repository = repository;
+        _mapper = mapper;
     }
 
-    [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetUsersAsync(){
-        var  users = await _context.Users.ToListAsync();
-        return users;
+    public async Task<ActionResult<IEnumerable<MemberResponse>>> GetAllAsync(){
+        var members = await _repository.GetMembersAsync();
+        return Ok(members);
     }
 
-    [HttpGet("{id:int}")] //api/v1/users/2
-    public async Task <ActionResult<AppUser>> GetUsersByIDAsync(int id){
-        var user = await _context.Users.FindAsync(id);
+    [HttpGet("{username}")] //api/v1/users/2
+    public async Task <ActionResult<MemberResponse>> GetByUsernameAsync(string username){
+        var member = await _repository.GetMemberAsync(username);
 
-        if(user == null){
+        if (member == null){
             return NotFound();
-        } 
+        }
 
-        return user;
+        return member;
     }
 
-    [HttpGet("{name}")] //api/v1/users/2
-    public ActionResult<string> Ready(string name){
-        
-        return $"Hola {name}";
+    [HttpPut]
+    public async Task<ActionResult> UpdateUser(MemberUpdateRequest request)
+    {
+        var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (username == null)
+        {
+            return BadRequest("No username found in token");
+        }
+        var user = await _repository.GetByUsernameAsync(username);
+        if (user == null)
+        {
+            return BadRequest("Could not find user");
+        }
+        _mapper.Map(request, user);
+        _repository.Update(user);
+        if (await _repository.SaveAllAsync())
+        {
+            return NoContent();
+        }
+        return BadRequest("Update user failed!");
     }
-
 }
