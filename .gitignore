@@ -5,7 +5,7 @@
 
 #Se Ignoran Cambios en la Base de Datos
 *.db
-
+*.env
 
 # User-specific files
 *.rsuser
