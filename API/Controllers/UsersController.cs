@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using API.Services;
 using API.Extensions;
 using API.DataEntities;
+using API.Helpers;
 namespace API.Controllers;
 
 [Authorize]
@@ -22,8 +23,10 @@ public class UsersController : BaseApiController{
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberResponse>>> GetAllAsync(){
-        var members = await _repository.GetMembersAsync();
+    public async Task<ActionResult<IEnumerable<MemberResponse>>> GetAllAsync([FromQuery] UserParams userParams){
+        var members = await _repository.GetMembersAsync(userParams);
+
+        Response.AddPaginationHeader(members);
         return Ok(members);
     }
 
