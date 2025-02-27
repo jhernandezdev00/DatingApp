@@ -3,7 +3,10 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Member } from '../_models/member';
 import { of, tap } from 'rxjs';
+<<<<<<< HEAD
 import { Photo } from '../_models/photo';
+=======
+>>>>>>> main
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +38,7 @@ export class MembersService {
       })
     );
   }
+<<<<<<< HEAD
 
   setMainPhoto(photo: Photo){
     return this.http.put(this.baseUrl + "users/photo/" + photo.id, {}).pipe(
@@ -61,4 +65,6 @@ export class MembersService {
       })
     ); 
   }
+=======
+>>>>>>> main
 }

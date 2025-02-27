@@ -4,6 +4,7 @@ using System.Text;
 using API.Data;
 using API.DTOs;
 using API.DataEntities;
+using API.DataEntities;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +29,8 @@ public class AccountController(
         user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
         user.PasswordSalt = hmac.Key;
 
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
+        // context.Users.Add(user);
+        // await context.SaveChangesAsync();
 
         return new UserResponse
         {

@@ -2,6 +2,9 @@ using API.Data;
 using API.DTOs;
 using AutoMapper;
 using System.Security.Claims;
+using API.DTOs;
+using AutoMapper;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using API.Services;
@@ -25,6 +28,9 @@ public class UsersController : BaseApiController{
     public async Task<ActionResult<IEnumerable<MemberResponse>>> GetAllAsync(){
         var members = await _repository.GetMembersAsync();
         return Ok(members);
+    public async Task<ActionResult<IEnumerable<MemberResponse>>> GetAllAsync(){
+        var members = await _repository.GetMembersAsync();
+        return Ok(members);
     }
 
     [HttpGet("{username}", Name="GetByUsername")] //api/v1/users/2
@@ -32,9 +38,12 @@ public class UsersController : BaseApiController{
         var member = await _repository.GetMemberAsync(username);
 
         if (member == null){
+        if (member == null){
             return NotFound();
         }
+        }
 
+        return member;
         return member;
     }
 
@@ -137,5 +146,4 @@ public class UsersController : BaseApiController{
 
         return BadRequest("There was a problem when deleting the photo");
     }
-
 }
