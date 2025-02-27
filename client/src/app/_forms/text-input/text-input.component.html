@@ -3,11 +3,10 @@
         [class.is-invalid]="control.invalid && control.touched"
         [type]="type()"
         class="form-control"
-        formControlName="password"
         [formControl]="control"
         placeholder="{{label()}}">
     <label>{{label()}}</label>
-    <div *ngIf="control.hasError('required')" class="invalid-feedback text-start">{{label()}}</div>
+    <div *ngIf="control.hasError('required')" class="invalid-feedback text-start">Registre su  {{label()}}</div>
     <div *ngIf="control.hasError('minlength')" class="invalid-feedback text-start">{{label()}} debe tener al menos {{control.errors?.["minlength"].requiredLength}} caracteres</div>
     <div *ngIf="control.hasError('maxlength')" class="invalid-feedback text-start">{{label()}} debe tener al menos  {{control.errors?.["maxlength"].requiredLength}} caracteres</div>
     <div *ngIf="control.hasError('isMatching')" class="invalid-feedback text-start">Contraseña no coincide</div>
