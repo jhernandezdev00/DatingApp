@@ -14,7 +14,7 @@
     
     <app-text-input [formControl]="$any(registerForm.controls['username'])" [label]="'Username'" />
     <app-text-input [formControl]="$any(registerForm.controls['knownAs'])" [label]="'Known as'" />
-    <app-text-input [formControl]="$any(registerForm.controls['dateOfBirth'])" [label]="'Fecha de Cumpleaños'" />
+    <app-date-picker [formControl]="$any(registerForm.controls['dateOfBirth'])" [label]="'Fecha de Cumpleaños'" [maxDate]="maxDate"/>
     <app-text-input [formControl]="$any(registerForm.controls['city'])" [label]="'Ciudad'" />
     <app-text-input [formControl]="$any(registerForm.controls['country'])" [label]="'Pais'" />
     <app-text-input [formControl]="$any(registerForm.controls['password'])" [label]="'Contraseña'" [type]="'Contraseña'" />
