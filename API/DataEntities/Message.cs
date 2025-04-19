@@ -8,7 +8,6 @@ public class Message{
     public DateTime MessageSent { get; set; }
     public bool SenderDeleted { get; set; }
     public bool RecipientDeleted { get; set; }
-
     // EF Navigation properties
     public AppUser Sender { get; set; } = null!;
     public int SenderId { get; set; }
