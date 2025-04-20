@@ -5,11 +5,12 @@ import { TimeagoModule } from 'ngx-timeago';
 import { RouterModule } from '@angular/router';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { Message } from '../_models/message';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 @Component({
   selector: 'app-messages',
   standalone: true,
-  imports: [ButtonsModule, FormsModule, TimeagoModule, RouterModule],
+  imports: [ButtonsModule, FormsModule, TimeagoModule, RouterModule, PaginationModule],
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.css'
 })
