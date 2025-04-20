@@ -35,6 +35,7 @@ export class MessagesComponent implements OnInit {
     else {
       return `/members/${message.senderUsername}`;
     }
+    
     }
 
   pageChanged(event: any) {
