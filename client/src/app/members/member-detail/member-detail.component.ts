@@ -6,9 +6,9 @@ import { TabDirective, TabsetComponent, TabsModule } from 'ngx-bootstrap/tabs';
 import { GalleryItem, GalleryModule, ImageItem } from 'ng-gallery';
 import { TimeagoModule } from 'ngx-timeago';
 import { DatePipe } from '@angular/common';
-import { MemberMessagesComponent } from '../member-messages/member-messages.component';
-import { MessagesService } from '../../_services/messages.service';
+import { MemberMessagesComponent } from "../member-messages/member-messages.component";
 import { Message } from '../../_models/message';
+import { MessagesService } from '../../_services/messages.service';
 
 @Component({
   selector: 'app-member-detail',
@@ -18,17 +18,26 @@ import { Message } from '../../_models/message';
   styleUrl: './member-detail.component.css'
 })
 export class MemberDetailComponent implements OnInit{
-  @ViewChild("memberTabs") memberTabs?: TabsetComponent;
+  @ViewChild("memberTabs", { static: true }) memberTabs?: TabsetComponent;
   private memberService = inject(MembersService);
   private messagesService = inject(MessagesService);
   private route = inject(ActivatedRoute);
-  member?: Member;
+  member: Member = {} as Member;
   images: GalleryItem[] = [];
   activeTab?: TabDirective;
   messages: Message[] = [];
-  
+
   ngOnInit(): void {
-    this.loadMember();
+    // this.loadMember();
+
+    this.route.data.subscribe({
+      next: data => {
+        this.member = data["member"];
+        this.member && this.member.photos.map((photo) => {
+          this.images.push(new ImageItem({src: photo.url, thumb: photo.url}));
+        });
+      }
+    });
 
     this.route.queryParams.subscribe({
       next: params => {
@@ -53,19 +62,18 @@ export class MemberDetailComponent implements OnInit{
     }
   }
 
-  loadMember() {
-    const username = this.route.snapshot.paramMap.get("username");
+  // loadMember() {
+  //   const username = this.route.snapshot.paramMap.get("username");
+  //   console.log("Username:" + username);
 
-    console.log("Username:" + username);
-
-    if (!username) return;
-    this.memberService.getMember(username).subscribe({
-      next: (member) => {
-        this.member = member;
-        member.photos.map((photo) => {
-          this.images.push(new ImageItem({src: photo.url, thumb: photo.url}));
-        });
-      }
-    });
-  }
+  //   if (!username) return;
+  //   this.memberService.getMember(username).subscribe({
+  //     next: (member) => {
+  //       this.member = member;
+  //       member.photos.map((photo) => {
+  //         this.images.push(new ImageItem({src: photo.url, thumb: photo.url}));
+  //       });
+  //     }
+  //   });
+  // }
 }
