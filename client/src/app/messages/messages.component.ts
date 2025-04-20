@@ -1,10 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { MessagesService } from '../_services/messages.service';
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { FormsModule } from '@angular/forms';
 import { TimeagoModule } from 'ngx-timeago';
-import { RouterModule } from '@angular/router';
-import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { Message } from '../_models/message';
+import { RouterModule } from '@angular/router';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 @Component({
@@ -19,6 +19,7 @@ export class MessagesComponent implements OnInit {
   container = "Inbox";
   pageNumber = 1;
   pageSize = 5;
+  isOutbox = this.container === "Outbox";
 
   ngOnInit(): void {
     this.loadMessages();
@@ -29,14 +30,13 @@ export class MessagesComponent implements OnInit {
   }
 
   getRoute(message: Message) {
-    if (this.container === 'outbox') {
+    if (this.isOutbox) {
       return `/members/${message.recipientUsername}`;
     }
     else {
       return `/members/${message.senderUsername}`;
     }
-    
-    }
+  }
 
   pageChanged(event: any) {
     if (this.pageNumber !== event.page) {

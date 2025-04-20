@@ -2,12 +2,12 @@ import { Component, inject, input, OnInit, output, ViewChild } from '@angular/co
 import { MessagesService } from '../../_services/messages.service';
 import { Message } from '../../_models/message';
 import { TimeagoModule } from 'ngx-timeago';
-import { NgForm } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-member-messages',
   standalone: true,
-  imports: [TimeagoModule],
+  imports: [TimeagoModule, FormsModule],
   templateUrl: './member-messages.component.html',
   styleUrl: './member-messages.component.css'
 })
@@ -16,7 +16,6 @@ export class MemberMessagesComponent {
   private messagesService = inject(MessagesService);
   username = input.required<string>();
   messages = input.required<Message[]>();
-
   messageContent = "";
   updateMessages = output<Message>();
 
