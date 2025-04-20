@@ -16,7 +16,7 @@ export class MessagesService {
 
   getMessages(pageNumber: number, pageSize: number, container: string) {
     let params = setPaginationHeaders(pageNumber, pageSize);
-    params = params.append("Container", container);
+    params = params.append("Container", container.toLocaleLowerCase());
 
     return this.http.get<Message[]>(this.baseUrl + "messages",
       { observe: "response", params }).subscribe({
@@ -25,7 +25,7 @@ export class MessagesService {
   }
 
   getMessageThread(username: string) {
-    return this.http.get<Message[]>(this.baseUrl + "message/thread/" + username);
+    return this.http.get<Message[]>(this.baseUrl + "messages/thread/" + username);
   }
 
 }
