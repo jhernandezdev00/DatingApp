@@ -14,23 +14,28 @@ using Microsoft.AspNetCore.Mvc;
 public class MessagesController
     (IMessageRepository messageRepository,
     IUserRepository userRepository,
-    IMapper mapper) : BaseApiController{
+    IMapper mapper) : BaseApiController
+{
     [HttpPost]
-    public async Task<ActionResult<MessageResponse>> CreateMessage(MessageRequest request){
+    public async Task<ActionResult<MessageResponse>> CreateMessage(MessageRequest request)
+    {
         var username = User.GetUserName();
 
-        if (username == request.RecipientUsername.ToLower(CultureInfo.InvariantCulture)){
+        if (username == request.RecipientUsername.ToLower(CultureInfo.InvariantCulture))
+        {
             return BadRequest("You can't message yourself!");
         }
 
         var sender = await userRepository.GetByUsernameAsync(username);
         var recipient = await userRepository.GetByUsernameAsync(request.RecipientUsername);
 
-        if (recipient == null || sender == null){
+        if (recipient == null || sender == null || sender.UserName == null || recipient.UserName == null)
+        {
             return BadRequest("The message can't be sent right now");
         }
 
-        var message = new Message{
+        var message = new Message
+        {
             Sender = sender,
             Recipient = recipient,
             SenderUsername = sender.UserName,
@@ -40,7 +45,8 @@ public class MessagesController
 
         messageRepository.Add(message);
 
-        if (await messageRepository.SaveAllAsync()){
+        if (await messageRepository.SaveAllAsync())
+        {
             return Ok(mapper.Map<MessageResponse>(message));
         }
 
@@ -49,7 +55,8 @@ public class MessagesController
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MessageResponse>>> GetMessagesForUser(
-        [FromQuery] MessageParams messageParams){
+        [FromQuery] MessageParams messageParams)
+    {
         messageParams.Username = User.GetUserName();
         var messages = await messageRepository.GetForUserAsync(messageParams);
         Response.AddPaginationHeader(messages);
@@ -57,37 +64,45 @@ public class MessagesController
     }
 
     [HttpGet("thread/{username}")]
-    public async Task<ActionResult<IEnumerable<MessageResponse>>> GetMessageThread(string username){
+    public async Task<ActionResult<IEnumerable<MessageResponse>>> GetMessageThread(string username)
+    {
         var currentUsername = User.GetUserName();
         return Ok(await messageRepository.GetThreadAsync(currentUsername, username));
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteMessage(int id){
+    public async Task<ActionResult> DeleteMessage(int id)
+    {
         var username = User.GetUserName();
         var message = await messageRepository.GetAsync(id);
 
-        if (message == null){
+        if (message == null)
+        {
             return BadRequest("Can't delete the message");
         }
 
-        if (message.SenderUsername != username && message.RecipientUsername != username){
+        if (message.SenderUsername != username && message.RecipientUsername != username)
+        {
             return Forbid();
         }
 
-        if (message.SenderUsername == username){
+        if (message.SenderUsername == username)
+        {
             message.SenderDeleted = true;
         }
 
-        if (message.RecipientUsername == username){
+        if (message.RecipientUsername == username)
+        {
             message.RecipientDeleted = true;
         }
 
-        if (message is { SenderDeleted: true, RecipientDeleted: true }){
+        if (message is { SenderDeleted: true, RecipientDeleted: true })
+        {
             messageRepository.Remove(message);
         }
 
-        if (await messageRepository.SaveAllAsync()){
+        if (await messageRepository.SaveAllAsync())
+        {
             return Ok();
         }
 
