@@ -44,12 +44,17 @@ public class AdminController(UserManager<AppUser> userManager) : BaseApiControll
         var userRoles = await userManager.GetRolesAsync(user);
         var result = await userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
 
-        if (!result.Succeeded) return BadRequest("Fallo en agregar el rol");
+        if (!result.Succeeded)
+        {
+           return BadRequest("Fallo en agregar el rol"); 
+        } 
 
         result = await userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
 
-        if (!result.Succeeded) return BadRequest("Fallo al eliminar el rol");
-
+        if (!result.Succeeded) { 
+            return BadRequest("Fallo al eliminar el rol");
+        }
+        
         return Ok(await userManager.GetRolesAsync(user));
     }
 
