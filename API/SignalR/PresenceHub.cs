@@ -5,25 +5,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 [Authorize]
-public class PresenceHub(PresenceTracker presenceTracker) : Hub
-{
-    public override async Task OnConnectedAsync()
-    {
-        if (Context.User == null)
-        {
+public class PresenceHub(PresenceTracker presenceTracker) : Hub{
+    public override async Task OnConnectedAsync(){
+        if (Context.User == null){
             throw new HubException("Cannot get the current user claim");
         }
 
-        await GetOnlineUsers();
+        await presenceTracker.UserConnected(Context.User.GetUserName(), Context.ConnectionId);
+        await Clients.Others.SendAsync("UserIsOnline", Context.User?.GetUserName());
 
-        var onlineUsers = await presenceTracker.GetOnlineUsers();
-        await Clients.All.SendAsync("GetOnlineUsers", onlineUsers);
+        await GetOnlineUsers();
     }
 
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        if (Context.User == null)
-        {
+    public override async Task OnDisconnectedAsync(Exception? exception){
+        if (Context.User == null){
             throw new HubException("Cannot get the current user claim");
         }
 
@@ -35,8 +30,7 @@ public class PresenceHub(PresenceTracker presenceTracker) : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    private async Task GetOnlineUsers()
-    {
+    private async Task GetOnlineUsers(){
         var onlineUsers = await presenceTracker.GetOnlineUsers();
         await Clients.All.SendAsync("GetOnlineUsers", onlineUsers);
     }
