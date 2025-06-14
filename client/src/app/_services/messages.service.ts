@@ -59,7 +59,6 @@ export class MessagesService {
   }
 
   async sendMessageAsync(username: string, content: string) {
-    console.log("AQUÍ")
     return this.hubConnection?.invoke("SendMessageAsync", { recipientUsername: username, content });
   }
 

@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 public class MessageRepository(DataContext context, IMapper mapper) : IMessageRepository{
     public void Add(Message message) => context.Messages.Add(message);
 
-    public void AddGroup(MessageGroup group) => context.MessageGroups.Add(group);
+    public void AddGroup(MessageGroup group) => context.Groups.Add(group);
 
     public async Task<Message?> GetAsync(int id) => await context.Messages.FindAsync(id);
 
@@ -41,7 +41,7 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
     }
 
     public async Task<MessageGroup?> GetMessageGroupAsync(string groupName)
-        => await context.MessageGroups
+        => await context.Groups
             .Include(g => g.Connections)
             .FirstOrDefaultAsync(g => g.Name == groupName);
 
