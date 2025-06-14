@@ -10,16 +10,13 @@ import { User } from '../_models/user';
 @Injectable({
   providedIn: 'root'
 })
-    
+  
 export class MessagesService {
   baseUrl = environment.apiUrl;
   hubUrl = environment.hubsUrl;
-  
   private http = inject(HttpClient);
-  paginatedResult = signal<PaginatedResult<Message[]> | null>(null);
-
   private hubConnection?: HubConnection;
-
+  paginatedResult = signal<PaginatedResult<Message[]> | null>(null);
   messageThread = signal<Message[]>([]);
 
   createHubConnection(user: User, otherUsername: string) {
@@ -35,6 +32,10 @@ export class MessagesService {
     this.hubConnection.on("ReceiveMessageThread", messages => {
       this.messageThread.set(messages);
     });
+
+    this.hubConnection.on("NewMessage", message => {
+      this.messageThread.update(messages => [...messages, message]);
+    })
   }
 
   stopHbuConnection() {
@@ -42,7 +43,6 @@ export class MessagesService {
       this.hubConnection.stop().catch(error => console.log(error));
     }
   }
-
 
   getMessages(pageNumber: number, pageSize: number, container: string) {
     let params = setPaginationHeaders(pageNumber, pageSize);
@@ -58,12 +58,11 @@ export class MessagesService {
     return this.http.get<Message[]>(this.baseUrl + "messages/thread/" + username);
   }
 
-  sendMessage(username: string, content: string) {
-    return this.http.post<Message>(this.baseUrl + "messages", { recipientUsername: username, content });
+  async sendMessage(username: string, content: string) {
+    return this.hubConnection?.invoke("SendMessage", { recipientUsername: username, content});
   }
 
   deleteMessage(id: number) {
     return this.http.delete(this.baseUrl + "messages/" + id);
   }
-
 }
