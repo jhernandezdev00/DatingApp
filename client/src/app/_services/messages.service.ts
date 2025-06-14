@@ -6,11 +6,11 @@ import { Message } from '../_models/message';
 import { PaginatedResult } from '../_models/pagination';
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import { User } from '../_models/user';
+import { Group } from '../_models/group';
 
 @Injectable({
   providedIn: 'root'
 })
-  
 export class MessagesService {
   baseUrl = environment.apiUrl;
   hubUrl = environment.hubsUrl;
@@ -35,7 +35,21 @@ export class MessagesService {
 
     this.hubConnection.on("NewMessage", message => {
       this.messageThread.update(messages => [...messages, message]);
-    })
+    });
+
+    this.hubConnection.on("UpdatedGroup", (group: Group) => 
+    {
+      if (group.connections.some(x => x.username === otherUsername)) {
+        this.messageThread.update(messages => {
+          messages.forEach(message => {
+            if (!message.dateRead) {
+              message.dateRead = new Date(Date.now());
+            }
+          })
+          return messages;
+        })
+      }
+    });
   }
 
   stopHbuConnection() {
@@ -59,7 +73,7 @@ export class MessagesService {
   }
 
   async sendMessageAsync(username: string, content: string) {
-    return this.hubConnection?.invoke("SendMessageAsync", { recipientUsername: username, content });
+    return this.hubConnection?.invoke("SendMessageAsync", { recipientUsername: username, content});
   }
 
   deleteMessage(id: number) {
