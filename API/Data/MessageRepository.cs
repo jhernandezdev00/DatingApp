@@ -10,18 +10,21 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
-public class MessageRepository(DataContext context, IMapper mapper) : IMessageRepository{
+public class MessageRepository(DataContext context, IMapper mapper) : IMessageRepository
+{
     public void Add(Message message) => context.Messages.Add(message);
 
     public void Remove(Message message) => context.Messages.Remove(message);
 
     public async Task<Message?> GetAsync(int id) => await context.Messages.FindAsync(id);
 
-    public async Task<PagedList<MessageResponse>> GetForUserAsync(MessageParams messageParams){
+    public async Task<PagedList<MessageResponse>> GetForUserAsync(MessageParams messageParams)
+    {
         var query = context.Messages.OrderByDescending(m => m.MessageSent)
             .AsQueryable();
 
-        query = messageParams.Container.ToLower(CultureInfo.InvariantCulture) switch{
+        query = messageParams.Container.ToLower(CultureInfo.InvariantCulture) switch
+        {
             "inbox" => query.Where(m => m.Recipient.UserName == messageParams.Username
                 && !m.RecipientDeleted),
             "outbox" => query.Where(m => m.Sender.UserName == messageParams.Username
@@ -37,7 +40,8 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             .CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
     }
 
-    public async Task<IEnumerable<MessageResponse>> GetThreadAsync(string currentUsername, string recipientUsername){
+    public async Task<IEnumerable<MessageResponse>> GetThreadAsync(string currentUsername, string recipientUsername)
+    {
         var messages = await context.Messages
             .Include(m => m.Sender).ThenInclude(p => p.Photos)
             .Include(m => m.Recipient).ThenInclude(p => p.Photos)
@@ -52,7 +56,8 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             .Where(m => m.DateRead == null && m.RecipientUsername == currentUsername)
             .ToList();
 
-        if (unreadMessages.Count != 0){
+        if (unreadMessages.Count != 0)
+        {
             unreadMessages.ForEach(m => m.DateRead = DateTime.UtcNow);
             await context.SaveChangesAsync();
         }
@@ -61,4 +66,17 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
     }
 
     public async Task<bool> SaveAllAsync() => await context.SaveChangesAsync() > 0;
+    
+    public void AddGroup(MessageGroup group) => context.Groups.Add(group);
+
+    public void RemoveGroup(Connection connection) => context.Connections.Remove(connection);
+
+    public async Task<Connection?> GetConnectionAsync(string connectionId)
+        => await context.Connections.FindAsync(connectionId);
+
+    public async Task<MessageGroup?> GetMessageGroupAsync(string groupName)
+        => await context.Groups
+            .Include(g => g.Connections)
+            .FirstOrDefaultAsync(g => g.Name == groupName);
+
 }
