@@ -18,18 +18,18 @@ public class MessageHub(IMessageRepository messagesRepository, IUserRepository u
         }
         var groupName = GetGroupName(Context.User.GetUserName(), otherUser);
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-        await AddToMessageGroup(groupName);
+        await AddToMessageGroupAsync(groupName);
 
         var messages = await messagesRepository.GetThreadAsync(Context.User.GetUserName(), otherUser!);
         await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception){
-        await RemoveFromMessageGroup();
+        await RemoveFromMessageGroupAsync();
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessage(MessageRequest messageRequest){
+    public async Task SendMessageAsync(MessageRequest messageRequest){
         var username = Context.User?.GetUserName() ?? throw new ArgumentException("Could not get user");
 
         if (username == messageRequest.RecipientUsername.ToLower(CultureInfo.InvariantCulture)){
@@ -65,7 +65,7 @@ public class MessageHub(IMessageRepository messagesRepository, IUserRepository u
         }
     }
 
-    private async Task<bool> AddToMessageGroup(string groupName){
+    private async Task<bool> AddToMessageGroupAsync(string groupName){
         var username = Context.User?.GetUserName() ?? throw new ArgumentException("Cannot get username");
         var group = await messagesRepository.GetMessageGroupAsync(groupName);
         var connection = new Connection{
@@ -83,7 +83,7 @@ public class MessageHub(IMessageRepository messagesRepository, IUserRepository u
         return await messagesRepository.SaveAllAsync();
     }
 
-    private async Task RemoveFromMessageGroup(){
+    private async Task RemoveFromMessageGroupAsync(){
         var connection = await messagesRepository.GetConnectionAsync(Context.ConnectionId);
         if (connection != null){
             messagesRepository.RemoveConnection(connection);
@@ -91,7 +91,7 @@ public class MessageHub(IMessageRepository messagesRepository, IUserRepository u
         }
     }
 
-    private string GetGroupName(string caller, string? other){
+    private static string GetGroupName(string caller, string? other){
         var stringCompare = string.CompareOrdinal(caller, other) < 0;
         return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}";
     }
