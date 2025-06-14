@@ -20,7 +20,10 @@ public class MessageHub(IMessageRepository messagesRepository) : Hub{
 
     public override Task OnDisconnectedAsync(Exception? exception) => base.OnDisconnectedAsync(exception);
 
-    private string GetGroupName(string caller, string? other){
+
+
+    private string GetGroupName(string caller, string? other)
+    {
         var stringCompare = string.CompareOrdinal(caller, other) < 0;
         return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}";
     }
